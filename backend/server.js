@@ -16,56 +16,69 @@ const accessKeyId = process.env.access_key_id;
 const secretAccessKey = process.env.secret_access_key;
 
 //initialise client
-const s3 = new S3Client({
-    credentials: {
-        accessKeyId: accessKeyId,
-        secretAccessKey: secretAccessKey,
-    },
-    region: bucketRegion
-});
+// const s3 = new S3Client({
+//     credentials: {
+//         accessKeyId: accessKeyId,
+//         secretAccessKey: secretAccessKey,
+//     },
+//     region: bucketRegion
+// });
 
 const upload = multer({ dest: 'uploads/' })
+
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
 
 app.get('/', (req, res) => {
   res.send('Hello from the backend!');
 });
 
-app.get('/files/:key', upload.single('file'), async (req, res) => {
+app.get('/api', (req, res) => { 
+  res.send({
+    test: 'testing api call'
+  });
+})
 
-  //get file from multer
-  const file = req.file;
+// app.get('/files/:key', upload.single('file'), async (req, res) => {
 
-  if (!file) {
-    return res.status(400).send({
-      error: 'No file uploaded'
-    });
-  }
+//   //get file from multer
+//   const file = req.file;
 
-  const key = req.params.key;
-  const fileStream = fs.createReadStream(file);
+//   if (!file) {
+//     return res.status(400).send({
+//       error: 'No file uploaded'
+//     });
+//   }
 
-  const param = {
-    Bucket: bucketName,
-    Body: fileStream,
-    Key: file.originalname,
-  }
+//   const key = req.params.key;
+//   const fileStream = fs.createReadStream(file);
 
-  try {
-    const cmd = new GetObjectCommand(param);
-    const data = await s3.send(cmd);
+//   const param = {
+//     Bucket: bucketName,
+//     Body: fileStream,
+//     Key: file.originalname,
+//   }
 
-    //delete temp file on multer
-    fs.unlunkSync(file.path``);
-    res.status(200).send({
-      file: data,
-    });
+//   try {
+//     const cmd = new GetObjectCommand(param);
+//     const data = await s3.send(cmd);
 
-  } catch (e) {
-    res.status(500).send({
-      error: 'Internal server error'
-    });
-  }
-});
+//     //delete temp file on multer
+//     fs.unlunkSync(file.path``);
+//     res.status(200).send({
+//       file: data,
+//     });
+
+//   } catch (e) {
+//     res.status(500).send({
+//       error: 'Internal server error'
+//     });
+//   }
+// });
 
 
 app.listen(port, () => {

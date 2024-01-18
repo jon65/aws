@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "server.js",
   "dependencies": {
-    "express": "^4.17.1"
+    "@aws-sdk/client-s3": "^3.490.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.17.1",
+    "multer": "^1.4.5-lts.1"
   },
   "scripts": {
     "start": "node server.js"
